@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESIA - Navegador de Proyecto Interactivo Profundo</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        body { background-color: #050505; margin: 0; overflow: hidden; font-family: 'Segoe UI', sans-serif; }
+        #grafico { width: 100vw; height: 100vh; }
+        .instrucciones { 
+            position: absolute; top: 20px; left: 20px; color: rgba(255,255,255,0.5); 
+            font-size: 12px; pointer-events: none; border-left: 2px solid #3b82f6; padding-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="instrucciones">
+        • CLIC en nodos para expandir/contraer<br>
+        • HOVER para iluminar la ruta (Focus)<br>
+        • SCROLL para Zoom<br>
+        • ARRASTRAR para mover el lienzo
+    </div>
+    <div id="grafico"></div>
+
+    <script>
+        var myChart = echarts.init(document.getElementById('grafico'));
+
+        // Estructura de datos profunda basada en el documento Capstone
+        var data = {
+            name: 'ESAN-AI-AGENT-CPG4',
+            label: { color: '#ffffff', fontSize: 18, fontWeight: 'bold' },
+            itemStyle: { color: '#d4af37' },
+            children: [
+                {
+                    name: 'I. Introducción',
+                    collapsed: true,
+                    children: [
+                        { name: 'Soberanía de Datos' },
+                        { name: 'Despliegue On-Premise' }
+                    ]
+                },
+                {
+                    name: 'II. Estado del Arte',
+                    collapsed: true,
+                    children: [
+                        { 
+                            name: '2.1 Modelos RAG',
+                            children: [
+                                { name: 'AWQ, QLoRA' },
+                                { name: 'Mistral, Phi-3, Gemma' },
+                                { name: 'Llama 3, ALoFTRAG' }
+                            ]
+                        },
+                        { 
+                            name: '2.2 IA Universitaria',
+                            children: [
+                                { name: 'URAG (Unified Hybrid RAG)' }
+                            ]
+                        },
+                        { 
+                            name: '2.3 Data Engineering',
+                            children: [
+                                { name: 'NEU-chatbot' },
+                                { name: 'DialogStudio' },
+                                { name: 'doc2dial' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: 'III. Gestión de Riesgos',
+                    collapsed: true,
+                    children: [
+                        { name: 'Matriz en Formato Apaisado' }
+                    ]
+                },
+                {
+                    name: 'IV. Ética y Normativas',
+                    collapsed: true,
+                    children: [
+                        { 
+                            name: '4.1 Validación y Ética',
+                            children: [
+                                { name: 'Moore' },
+                                { name: 'ParlAI, LaMDA, BlenderBot' }
+                            ]
+                        },
+                        { name: '4.2 Síntesis de Convergencia' }
+                    ]
+                },
+                {
+                    name: 'V. Ing. Requerimientos',
+                    collapsed: true,
+                    children: [
+                        { name: '15 Historias de Usuario' },
+                        { name: '6 RF, 3 RNF' }
+                    ]
+                },
+                {
+                    name: 'VI. Arquitectura del Sistema',
+                    collapsed: true,
+                    children: [
+                        { 
+                            name: '6.1 Infraestructura',
+                            children: [
+                                { name: 'Llama 3.1 (4.7GB)' },
+                                { name: 'HTML/JS Modular' }
+                            ]
+                        },
+                        { name: '6.2 Protocolo de Despliegue (Uvicorn)' }
+                    ]
+                },
+                {
+                    name: 'VII. Diseño UML',
+                    collapsed: true,
+                    children: [
+                        { name: '15 Diagramas de Secuencia (Farid)' }
+                    ]
+                },
+                {
+                    name: 'VIII. Algoritmos',
+                    collapsed: true,
+                    children: [
+                        { name: '3 Algoritmos Nativos IEEE' }
+                    ]
+                },
+                {
+                    name: 'IX. IMPLEMENTACIÓN MVP',
+                    itemStyle: { color: '#3b82f6' },
+                    collapsed: false, // Expansión estratégica inicial
+                    children: [
+                        {
+                            name: '9.1 Frontend (UI)',
+                            children: [
+                                { name: 'Calendario Time-Blocking' },
+                                { name: 'Prevención de Conflictos' },
+                                { name: 'Integración Sidebar IA' }
+                            ]
+                        },
+                        {
+                            name: '9.2 Datos y RAG',
+                            children: [
+                                { name: 'Web Scraping / Limpieza Joomla' },
+                                { name: 'HuggingFace + ChromaDB' },
+                                { name: 'Mecanismo Anti-Alucinaciones' }
+                            ]
+                        },
+                        {
+                            name: '9.3 Despliegue y Conectividad',
+                            children: [
+                                { name: 'Inferencia Soberana On-Premise' },
+                                { name: 'Ignición Dual FastAPI' },
+                                { name: 'Tool Calling (Google Calendar)' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name: 'Glosario y Referencias',
+                    collapsed: true,
+                    children: [
+                        { name: 'OCR, CoT, Tool Calling' },
+                        { name: 'Autogenerado vía biblatex' }
+                    ]
+                }
+            ]
+        };
+
+        myChart.setOption({
+            tooltip: { trigger: 'item', triggerOn: 'mousemove', backgroundColor: '#1a1a1a', textStyle: { color: '#fff' } },
+            series: [
+                {
+                    type: 'tree',
+                    data: [data],
+                    top: '5%', left: '15%', bottom: '5%', right: '25%',
+                    symbolSize: 14,
+                    orient: 'LR',
+                    roam: true,
+                    expandAndCollapse: true,
+                    initialTreeDepth: 1, // Controla qué tan abierto inicia
+                    animationDurationUpdate: 750,
+                    itemStyle: { color: '#3b82f6', borderColor: '#f8fafc', borderWidth: 2 },
+                    lineStyle: { color: '#475569', width: 2, curveness: 0.5 },
+                    label: {
+                        position: 'top',
+                        verticalAlign: 'bottom',
+                        align: 'center',
+                        fontSize: 14,
+                        color: '#f8fafc',
+                        distance: 10
+                    },
+                    leaves: {
+                        label: { position: 'right', verticalAlign: 'middle', align: 'left' }
+                    },
+                    // ¡EL NÚCLEO DE LA INTERACTIVIDAD VISUAL!
+                    emphasis: {
+                        focus: 'descendant', // Ilumina el nodo y sus hijos
+                        itemStyle: {
+                            color: '#d4af37', // Se pinta de dorado al interactuar
+                            borderColor: '#ffffff',
+                            borderWidth: 3,
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(212, 175, 55, 0.5)'
+                        },
+                        lineStyle: {
+                            color: '#d4af37',
+                            width: 3
+                        },
+                        label: {
+                            color: '#d4af37',
+                            fontWeight: 'bold',
+                            textShadowBlur: 5,
+                            textShadowColor: '#000'
+                        }
+                    }
+                }
+            ]
+        });
+
+        window.addEventListener('resize', function(){ myChart.resize(); });
+    </script>
+</body>
+</html>

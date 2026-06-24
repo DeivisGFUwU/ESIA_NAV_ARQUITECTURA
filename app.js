@@ -9,6 +9,7 @@ const myChart = echarts.init(chartDom);
 // Configuración absoluta del Knowledge Graph
 const option = {
     // Configuración de los Tooltips flotantes (HTML Injection Support)
+    // Configuración de los Tooltips flotantes (HTML Injection Support)
     tooltip: {
         trigger: 'item',
         triggerOn: 'mousemove',
@@ -16,11 +17,25 @@ const option = {
         borderColor: '#3b82f6',
         borderWidth: 1,
         textStyle: { color: '#f8fafc' },
-        padding: 10,
+        padding: 12,
         borderRadius: 8,
         enterable: true, // Permite que el cursor entre al tooltip (útil para imágenes)
         shadowBlur: 15,
-        shadowColor: 'rgba(0, 0, 0, 0.8)'
+        shadowColor: 'rgba(0, 0, 0, 0.8)',
+        // INYECCIÓN LÓGICA: Formateador global para leer el "value"
+        formatter: function (params) {
+            let nodeName = params.data.name || '';
+            // Si el nodo no tiene 'value', colocamos un texto por defecto
+            let nodeValue = params.data.value || 'Haz clic para expandir y explorar esta rama.';
+            
+            return `
+            <div style="max-width: 320px; white-space: normal;">
+                <b style="color: #d4af37; font-size: 14px;">${nodeName}</b>
+                <hr style="border-color: #334155; margin: 8px 0; border-style: solid; border-width: 1px 0 0 0;"/>
+                <span style="color: #cbd5e1; font-size: 13px; line-height: 1.5;">${nodeValue}</span>
+            </div>
+            `;
+        }
     },
     series: [
         {

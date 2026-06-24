@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESIA: Motor de Inferencia Multi-Nivel</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+            --glow-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: var(--accent-blue);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: var(--glow-shadow);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .pipeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+        }
+
+        /* Línea conectora central */
+        .pipeline-container::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 20px;
+            bottom: 20px;
+            width: 4px;
+            background: #334155;
+            z-index: 0;
+        }
+
+        .node {
+            background: var(--panel-bg);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin-left: 50px;
+            position: relative;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        /* El círculo en la línea de tiempo */
+        .node::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 24px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #334155;
+            border: 4px solid var(--bg-color);
+            transition: all 0.4s ease;
+        }
+
+        .node:hover {
+            transform: translateX(10px);
+            border-color: var(--text-muted);
+        }
+
+        .node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 0.5rem;
+        }
+
+        .node-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .node-metrics {
+            font-family: monospace;
+            font-size: 0.85rem;
+            background: #0f172a;
+            padding: 4px 10px;
+            border-radius: 6px;
+            color: var(--accent-green);
+            border: 1px solid #1e293b;
+        }
+
+        .node-body {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #cbd5e1;
+        }
+
+        .example-box {
+            background: #020617;
+            border-left: 3px solid var(--text-muted);
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0 8px 8px 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .highlight-regex { color: var(--accent-green); font-weight: bold; }
+        .highlight-math { color: var(--accent-purple); font-weight: bold; }
+        .highlight-alert { color: var(--accent-red); font-weight: bold; }
+
+        /* Estados de Animación por JS */
+        .node.active-1 { border-color: var(--accent-blue); box-shadow: 0 0 20px rgba(56,189,248,0.2); }
+        .node.active-1::before { background: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); }
+        
+        .node.active-2 { border-color: var(--accent-green); box-shadow: 0 0 20px rgba(16,185,129,0.2); }
+        .node.active-2::before { background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
+        
+        .node.active-3 { border-color: var(--accent-purple); box-shadow: 0 0 20px rgba(168,85,247,0.2); }
+        .node.active-3::before { background: var(--accent-purple); box-shadow: 0 0 10px var(--accent-purple); }
+        
+        .node.active-4 { border-color: var(--accent-red); box-shadow: 0 0 20px rgba(239,68,68,0.2); }
+        .node.active-4::before { background: var(--accent-red); box-shadow: 0 0 10px var(--accent-red); }
+
+        .controls {
+            margin-top: 3rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        button {
+            background: var(--panel-bg);
+            color: var(--text-main);
+            border: 1px solid var(--accent-blue);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: var(--accent-blue);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ESIA | Arquitectura del Enrutador Híbrido</h1>
+        <p class="subtitle">Animación del ciclo de vida de una consulta en el embudo de 4 niveles. Observa cómo el algoritmo destila la complejidad léxica y semántica antes de ejecutar la Recuperación RAG.</p>
+    </header>
+
+    <div class="pipeline-container">
+        
+        <div class="node" id="nivel-1">
+            <div class="node-header">
+                <div class="node-title" style="color: var(--accent-blue);">Nivel I: Gravedad de Interfaz</div>
+                <div class="node-metrics">Latencia: Pasivo (Instantáneo)</div>
+            </div>
+            <div class="node-body">
+                <p>El sistema captura el contexto visual del usuario. Identifica en qué dashboard de la web se encuentra operando y aplica un sesgo matemático inicial.</p>
+                <ul>
+                    <li>Asigna una constante de <span class="highlight-blue">+0.05 puntos</span> al agente correspondiente.</li>
+                    <li>Funciona como un "Bono UI" que se almacenará en la memoria para el Nivel III.</li>
+                </ul>
+                <div class="example-box">
+                    <span style="color: #64748b;">// Escenario:</span> El alumno navega en la pestaña de Bienestar Estudiantil.<br>
+                    <span style="color: #cbd5e1;">Variables de estado:</span> agente_ui = "bienestar"<br>
+                    <span class="highlight-blue">► Bono Gravitacional Acumulado: Bienestar (+0.05)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="node" id="nivel-2">
+            <div class="node-header">
+                <div class="node-title" style="color: var(--accent-green);">Nivel II: Motor Heurístico (RegEx)</div>
+                <div class="node-metrics">Latencia: ~0.0001s</div>
+            </div>
+            <div class="node-body">
+                <p>El texto entra a una matriz de Expresiones Regulares de altísima velocidad. Compara la pregunta cruda con diccionarios predefinidos de áreas específicas.</p>
+                <ul>
+                    <li>Si hay coincidencia directa y única, se produce un <strong>Knockout Técnico</strong> y salta directo al RAG.</li>
+                    <li>Si hay choque de palabras de distintas áreas, aplica un bono plano (+0.10) y delega al Nivel III.</li>
+                </ul>
+                <div class="example-box">
+                    <span style="color: #64748b;">// Caso Simple:</span> "¿A qué hora sirven los <span class="highlight-regex">menús</span> hoy?" -> <span class="highlight-green">WIN: BIENESTAR</span><br><br>
+                    <span style="color: #64748b;">// Caso Complejo:</span> "¿Qué pasa si me <span class="highlight-regex">retiro</span> del <span class="highlight-regex">curso</span>?"<br>
+                    <span class="highlight-alert">⚠️ Ambigüedad Léxica: ['gestion_admin', 'tutoria'] -> Delegando a Nivel 3...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="node" id="nivel-3">
+            <div class="node-header">
+                <div class="node-title" style="color: var(--accent-purple);">Nivel III: Enrutador Semántico Ponderado</div>
+                <div class="node-metrics">Latencia: ~0.04s</div>
+            </div>
+            <div class="node-body">
+                <p>El núcleo matemático. Transforma la frase en vectores (all-MiniLM-L6-v2) y calcula la <strong>Similitud del Coseno</strong>. Le suma los bonos del Nivel 1 y 2, y evalúa la Matriz de Confianza Bidimensional.</p>
+                <ul>
+                    <li><strong>Out-of-Domain:</strong> Si MaxScore < 0.25 -> Bloqueo absoluto.</li>
+                    <li><strong>Botones UX:</strong> Si MaxScore >= 0.55 Y Diferencia < 0.08 -> Lanza opciones al usuario.</li>
+                    <li><strong>Válvula de Escape:</strong> Si 0.25 <= MaxScore < 0.40 -> Falla de confianza, delega al LLM.</li>
+                </ul>
+                <div class="example-box">
+                    <span style="color: #64748b;">// Simulación de Choque Vectorial:</span><br>
+                    Similitud Base: Tutoría(0.53) | Soporte(0.48)<br>
+                    + Bono Nivel 2: Tutoría(<span class="highlight-math">+0.10</span>) | Soporte(<span class="highlight-math">+0.10</span>)<br>
+                    <span class="highlight-math">Puntaje Final: Tutoría(0.63) vs Soporte(0.58) | Diferencia: 0.05</span><br>
+                    <span class="highlight-purple">► Acción: Desplegar interfaz de botones para Desambiguación.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="node" id="nivel-4">
+            <div class="node-header">
+                <div class="node-title" style="color: var(--accent-red);">Nivel IV: Zero-Shot LLM (Contingencia)</div>
+                <div class="node-metrics">Latencia: ~11.00s</div>
+            </div>
+            <div class="node-body">
+                <p>El último escudo de contención. Si el texto es demasiado abstracto, poético o complejo para las matemáticas tradicionales, el servidor despierta a Llama 3.1 para que razone y clasifique el texto pura y exclusivamente por inteligencia artificial generativa.</p>
+                <div class="example-box">
+                    <span style="color: #64748b;">// Consulta Abstracta:</span><br>
+                    "Siento que el peso de mis responsabilidades académicas está quebrando mi mente, busco un remanso de paz para evitar el colapso."<br><br>
+                    <span style="color: #64748b;">// Análisis:</span> Score Max (0.35) < Umbral Confianza (0.40)<br>
+                    <span class="highlight-alert">► Llama 3.1 Zero-Shot Classification: BIENESTAR_ESTUDIANTIL</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="controls">
+        <button onclick="simularRutaRapida()">Simular Ruta Rápida (Nivel 2)</button>
+        <button onclick="simularAmbiguedad()">Simular Choque (Nivel 3)</button>
+        <button onclick="simularPanico()">Simular Abstracción (Nivel 4)</button>
+    </div>
+
+    <script>
+        function resetNodes() {
+            document.querySelectorAll('.node').forEach(n => {
+                n.className = 'node';
+            });
+        }
+
+        async function simularRutaRapida() {
+            resetNodes();
+            const n1 = document.getElementById('nivel-1');
+            const n2 = document.getElementById('nivel-2');
+            
+            n1.classList.add('active-1');
+            await new Promise(r => setTimeout(r, 800));
+            n1.classList.remove('active-1');
+            
+            n2.classList.add('active-2');
+            // Termina en nivel 2
+        }
+
+        async function simularAmbiguedad() {
+            resetNodes();
+            const nodes = ['nivel-1', 'nivel-2', 'nivel-3'];
+            
+            for (let i = 0; i < nodes.length; i++) {
+                const n = document.getElementById(nodes[i]);
+                n.classList.add(`active-${i+1}`);
+                if(i < nodes.length -1) {
+                    await new Promise(r => setTimeout(r, 800));
+                    n.classList.remove(`active-${i+1}`);
+                }
+            }
+            // Termina brillando en Nivel 3
+        }
+
+        async function simularPanico() {
+            resetNodes();
+            const nodes = ['nivel-1', 'nivel-2', 'nivel-3', 'nivel-4'];
+            
+            for (let i = 0; i < nodes.length; i++) {
+                const n = document.getElementById(nodes[i]);
+                n.classList.add(`active-${i+1}`);
+                if(i < nodes.length -1) {
+                    await new Promise(r => setTimeout(r, 800));
+                    n.classList.remove(`active-${i+1}`);
+                }
+            }
+            // Termina brillando en Nivel 4
+        }
+    </script>
+</body>
+</html>

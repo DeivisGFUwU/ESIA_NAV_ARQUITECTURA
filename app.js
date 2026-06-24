@@ -117,6 +117,16 @@ const option = {
 // Ejecución del renderizado
 option && myChart.setOption(option);
 
+// ==========================================
+// MOTOR DE ENLACES EXTERNOS (Intercepción de Clics)
+// ==========================================
+myChart.on('click', function (params) {
+    // Si el nodo clickeado tiene el atributo 'link' en data.js, abre la pestaña
+    if (params.data.link) {
+        window.open(params.data.link, '_blank');
+    }
+});
+
 // Listener para hacer el gráfico responsivo ante redimensionamientos
 window.addEventListener('resize', () => {
     myChart.resize();

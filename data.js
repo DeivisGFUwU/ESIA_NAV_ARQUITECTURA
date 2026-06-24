@@ -302,88 +302,91 @@ const esiaData = {
             ]
         }
         // ==========================================
-        // ARCHIVO: data.js (SPRINT 3: Capítulo IX y Cierre)
+        // REEMPLAZO EXACTO SPRINT 3: Capítulo IX (Fuente: LaTeX Crudo)
         // ==========================================
         ,{
-            name: 'IX. IMPLEMENTACIÓN Y RESULTADOS MVP',
-            value: 'Núcleo operativo del agente ESIA',
+            name: 'IX. IMPLEMENTACIÓN Y RESULTADOS DEL MVP',
+            value: 'Validación funcional del sistema de gestión universitaria',
             itemStyle: { color: '#3b82f6' },
-            collapsed: false, // Expandido por defecto para la presentación
+            collapsed: false,
             children: [
                 {
-                    name: '9.1 Frontend (UI Guiada por Estado)',
-                    value: 'Gestión de la interacción del usuario final',
-                    collapsed: true,
+                    name: 'Base del Ecosistema',
+                    value: 'Arquitectura unificada y Base de Datos (auth_sms_db)',
+                    tooltip: {
+                        formatter: `
+                        <div style="padding: 5px; max-width: 320px; white-space: normal;">
+                            <b style="color: #d4af37;">Arquitectura Unificada:</b><br/>
+                            <hr style="border-color: #333;"/>
+                            • <b>Estructura:</b> Carpeta <i>agents</i> para enrutamiento (ej. bTutoria.py) y <i>web</i> (css, js, py, html).<br/>
+                            • <b>Seguridad:</b> Datos sensibles excluidos vía .gitignore.<br/>
+                            • <b>Base de Datos:</b> Almacenamiento local de sesiones, logs y mensajería con retención de 30 días hábiles.
+                        </div>`
+                    }
+                },
+                {
+                    name: '9.1 Validación Frontend',
+                    value: 'Módulo de Gestión de Tiempo',
                     children: [
-                        { 
-                            name: 'State-Driven UI (Bento Cards)', 
-                            value: 'Tarjetas temáticas que obligan a contextualizar la intención, inyectando metadatos rígidos en el payload HTTP.' 
+                        { name: 'Gestión de Estado', value: 'Persistencia JSON local (Single Page Application).' },
+                        { name: 'Algoritmo CRUD', value: 'Validador anti-conflictos horarios contra base de datos local.' },
+                        { name: 'Interoperabilidad IA', value: 'Click-to-Prompt para consultas estructuradas al motor RAG.' }
+                    ]
+                },
+                {
+                    name: '9.2 Pipeline RAG',
+                    value: 'Procesamiento de datos en tres etapas',
+                    children: [
+                        { name: '1. Limpieza', value: 'Uso de BeautifulSoup4 y Regex para purgar ruido estructural.' },
+                        { name: '2. Vectorización', value: 'Embeddings con all-MiniLM-L6-v2 indexados en ChromaDB.' },
+                        { name: '3. Generación Restringida', value: 'System Prompts estrictos para 100% libre de alucinaciones y técnica Chain-of-Thought (CoT).' }
+                    ]
+                },
+                {
+                    name: '9.3 Inferencia de Intención',
+                    value: 'Arquitectura híbrida en 4 niveles. 🔴 HAZ CLIC AQUÍ para abrir la matriz de ejemplos prácticos.',
+                    link: './Niveles_1_4.html', // <--- ENLACE AL ARCHIVO
+                    itemStyle: { borderColor: '#10b981', borderWidth: 2, shadowBlur: 10, shadowColor: '#10b981' },
+                    children: [
+                        {
+                            name: 'Niveles I y II (Rápidos)',
+                            value: 'Sesgo de UI y Motor Heurístico (Clic para ver casos de uso)',
+                            link: './Niveles_1_4.html', // <--- ENLACE AL ARCHIVO
+                            tooltip: {
+                                formatter: `
+                                <div style="padding: 5px; max-width: 350px; white-space: normal;">
+                                    <b style="color: #10b981;">Enrutamiento de Baja Latencia:</b><br/>
+                                    <hr style="border-color: #333;"/>
+                                    • <b>Nivel I (Gravedad de Interfaz):</b> Sesgo contextual pasivo según el dashboard activo (+0.05 de probabilidad).<br/>
+                                    • <b>Nivel II (Motor RegEx):</b> Analizador heurístico de alta velocidad (< 0.001s). Otorga un bono léxico plano de +0.10 ante anomalías.<br/><br/>
+                                    <i style="color: #d4af37;">► Clic en el nodo para abrir simulador de preguntas.</i>
+                                </div>`
+                            }
                         },
-                        { 
-                            name: 'Calendario Time-Blocking', 
-                            value: 'Cuadrícula CSS Grid con persistencia JSON local para renderizar bloques horarios sin recargar la página.' 
-                        },
-                        { 
-                            name: 'Click-to-Prompt', 
-                            value: 'Mecanismo de degradación elegante que extrae el título de un evento del DOM y carga un comando en el chat.' 
+                        {
+                            name: 'Niveles III y IV (Profundos)',
+                            value: 'Semántica y Fallback LLM (Clic para ver casos de uso)',
+                            link: './Niveles_1_4.html', // <--- ENLACE AL ARCHIVO
+                            tooltip: {
+                                formatter: `
+                                <div style="padding: 5px; max-width: 350px; white-space: normal;">
+                                    <b style="color: #10b981;">Enrutamiento Analítico:</b><br/>
+                                    <hr style="border-color: #333;"/>
+                                    • <b>Nivel III (Enrutador Semántico):</b> Cálculo vectorial con all-MiniLM-L6-v2. Utiliza Similitud de Coseno. Umbral > 0.60. Margen de ambigüedad < 0.08 fuerza desambiguación manual.<br/><br/>
+                                    • <b>Nivel IV (Zero-Shot LLM):</b> Protocolo de contingencia (0.25 < score < 0.60). Delega la clasificación deductiva a Llama 3.1 ante estrés semántico complejo.<br/><br/>
+                                    <i style="color: #d4af37;">► Clic en el nodo para abrir simulador de preguntas.</i>
+                                </div>`
+                            }
                         }
                     ]
                 },
                 {
-                    name: '9.2 Ingeniería de Datos (RAG)',
-                    value: 'Pipeline de vectorización y anti-alucinaciones',
-                    collapsed: true,
+                    name: '9.4 Protocolo de Despliegue',
+                    value: 'Ignición distribuida en microservicios',
                     children: [
-                        {
-                            name: 'Extracción Dinámica (Selenium)',
-                            value: 'Scraping de DOM dinámico capaz de evadir algoritmos anti-bot y navegar por la intranet institucional autenticada.'
-                        },
-                        {
-                            name: 'Análisis Estructural (pdfplumber)',
-                            value: 'Lectura geométrica (Layout Analysis) que preserva la alineación horizontal de tablas y mallas curriculares.'
-                        },
-                        {
-                            name: 'Segmentación Recursiva (Chunking)',
-                            value: 'División del corpus en bloques de 800 caracteres con un solapamiento (overlap) de 100 caracteres para no perder semántica.'
-                        },
-                        {
-                            name: 'Vectorización (ChromaDB)',
-                            value: 'Uso del modelo all-MiniLM-L6-v2 (384 dimensiones). La base vectorial se particiona en colecciones aisladas para evitar colisiones.'
-                        }
-                    ]
-                },
-                {
-                    name: '9.3 Despliegue y Conectividad',
-                    value: 'Motor lógico y transaccional',
-                    collapsed: false, // El corazón de la exposición
-                    children: [
-                        {
-                            name: 'Enrutamiento de Intenciones (Routing)',
-                            value: 'Sistema híbrido de delegación de tareas',
-                            children: [
-                                { 
-                                    name: 'Nivel I: Hard-Routing', 
-                                    value: 'Enrutamiento determinista accionado por la UI. Fuerzan la invocación de un agente específico puenteando la ambigüedad.' 
-                                },
-                                { 
-                                    name: 'Nivel II: Soft-Routing', 
-                                    value: 'Motor heurístico basado en Regex. Mapea la similitud semántica de palabras clave (substring matching) para asignar pesos por especialidad.' 
-                                }
-                            ]
-                        },
-                        {
-                            name: 'Razonamiento CoT',
-                            value: 'El Agente de Tutoría usa "Chain-of-Thought" para descomponer problemas curriculares complejos antes de emitir un veredicto.'
-                        },
-                        {
-                            name: 'Flujo Transaccional (Tool Calling)',
-                            value: 'Ejecución dinámica de herramientas externas',
-                            children: [
-                                { name: 'Exploración de Estado', value: 'Petición GET a Google Apps Script para validar disponibilidad de infraestructura.' },
-                                { name: 'Semantic Parsing', value: 'El LLM extrae entidades (Fecha, Hora, Deporte) y genera un comando estructurado.' },
-                                { name: 'Intercepción POST', value: 'El backend inyecta la identidad OAuth2 del alumno y ejecuta la reserva en el calendario.' }
-                            ]
-                        }
+                        { name: 'Nodo Datos (Supabase)', value: 'Gestión relacional, autenticación y logs de sesión.' },
+                        { name: 'Nodo Inferencia (Cloud)', value: 'FastAPI, ChromaDB y Llama 3.1. Latencia actual ~3s.' },
+                        { name: 'Nodo Web (Render)', value: 'Orquestación HTTP/RESTful asíncrona.' }
                     ]
                 }
             ]
@@ -394,7 +397,7 @@ const esiaData = {
             collapsed: true,
             children: [
                 { name: 'Términos Clave', value: 'RAG, CoT, Tool-Augmented LLMs, Zero Trust, Chunking.' },
-                { name: 'Bibliografía (IEEE)', value: '14 referencias académicas autogeneradas vía BibTeX respaldando la arquitectura.' }
+                { name: 'Bibliografía (IEEE)', value: 'Referencias académicas gestionadas vía BibTeX.' }
             ]
         }
     ]
